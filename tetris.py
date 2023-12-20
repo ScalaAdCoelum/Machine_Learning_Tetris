@@ -3,6 +3,11 @@ import random
 import numpy as np
 import copy
 import matplotlib.pyplot as plt
+import pyautogui
+import os
+
+screenshot_dir = "screenshots"
+os.makedirs(screenshot_dir, exist_ok=True)
 
 # Constants
 WIDTH, HEIGHT = 300, 600
@@ -292,6 +297,9 @@ def evaluate_agent(agent, generation):
 
     fall_speed = 500
 
+    screenshot_interval = 1000
+    screenshot_counter = 0
+
     best_agent_fitness = float('-inf')
     best_agent_generation_fitness = 0  # Track the fitness of the best agent within the current generation
 
@@ -384,6 +392,11 @@ def evaluate_agent(agent, generation):
                         pygame.draw.rect(screen, grid[row][col], (col * GRID_SIZE, row * GRID_SIZE, GRID_SIZE, GRID_SIZE))
 
             pygame.display.flip()
+
+        if pygame.time.get_ticks() - fall_time > screenshot_counter * screenshot_interval:
+            screenshot_path = os.path.join(screenshot_dir, f"gen_{generation}_agent_{agent['fitness']}_screenshot_{screenshot_counter}.png")
+            pygame.image.save(screen, screenshot_path)
+            screenshot_counter += 1
 
         agent["fitness"] = heuristic_model(grid, current_shape, shape_x, shape_y)
         fitness_values = [agent['fitness'] for agent in population]
